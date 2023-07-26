@@ -11,35 +11,50 @@ import { Server, Socket } from 'socket.io';
 export class EventsGateway {
 
     server: Server;
+
+	players = new Map<string, string>();
 	
 	afterInit(server: Server) {
 		this.server = server;
 		console.log('Server is ready');
 	  }
 	  
-	  handleConnection(client: Socket, ...args: any[]) {
+	  handleConnection(client: any, ...args: any[]) {
+		if (!this.players.has(client.id))
+		{
+			if (this.players.size < 1)
+				this.players.set(client.id, "left");
+			else
+				this.players.set(client.id, "right");
+
+		}
 		console.log(`Client connected: ${client.id}`);
 	  }
 	
-	  handleDisconnect(client: Socket) {
+	  handleDisconnect(client: any) {
+		this.players.delete(client.id);
 		console.log(`Client disconnected: ${client.id}`);
 	  }
-    @SubscribeMessage('message')
-    handleMessage(client: any, payload: any): string {
-        return 'Hello world!';
-    }
+    
+	  @SubscribeMessage('message')
+    	handleMessage(client: any, payload: any): string {
+        	return 'Hello world!';
+    	}
 
-	@SubscribeMessage('paddleAMove')
-	handlePaddleAMove(client: any, newPosition: number): void {
-		client.broadcast.emit('paddleAMove', newPosition);
-		return;
-	}
+		@SubscribeMessage('paddleMove')
+			handlePaddleMove(client: any, newPosition: number): void {
+				// client.broadcast.emit('paddleMove', newPosition);
+				client.broadcast.emit('paddleMove', { playerId: this.players.get(client.id), newPos: newPosition });
+				console.log(this.players.get(client.id));
+				return;
+			}
 
-	@SubscribeMessage('paddleBMove')
-	handlePaddleBMove(client: any, newPosition: number): void {
-		client.broadcast.emit('paddleBMove', newPosition);
-		return;
-	}
+			
+		// @SubscribeMessage('paddleBMove')
+		// 	handlePaddleBMove(client: any, newPosition: number): void {
+		// 		client.broadcast.emit('paddleBMove', newPosition);
+		// 		return;
+		// 	}
 }
     // @SubscribeMessage('moveUp')
     // updateMoveUp(client: any, moveUp: boolean): void {
