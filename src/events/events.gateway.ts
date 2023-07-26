@@ -23,9 +23,16 @@ export class EventsGateway {
 		if (!this.players.has(client.id))
 		{
 			if (this.players.size < 1)
+			{
 				this.players.set(client.id, "left");
+				client.emit('direction', 'left');
+				console.log("left");
+			}
 			else
+			{
 				this.players.set(client.id, "right");
+				client.emit('direction', 'right');
+			}
 
 		}
 		console.log(`Client connected: ${client.id}`);
