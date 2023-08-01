@@ -8,6 +8,7 @@ import { Server, Socket } from 'socket.io';
 let ballPos = {x: 0, y: 0};
 
 @WebSocketGateway()
+
 export class EventsGateway {
 
     server: Server;
@@ -57,19 +58,19 @@ export class EventsGateway {
 				return;
 			}
 
-		@SubscribeMessage('ballX')
-    	updateBallX(client: any, ballX: number): void {
-      		ballPos.x = ballX;
-			client.broadcast.emit('ballX', ballPos.x);
-			// console.log("X: ", ballPos.x);
-    	}
+		// @SubscribeMessage('ballX')
+    	// updateBallX(client: any, ballX: number): void {
+      	// 	ballPos.x = ballX;
+		// 	client.broadcast.emit('ballX', ballPos.x);
+		// 	// console.log("X: ", ballPos.x);
+    	// }
 		
-		@SubscribeMessage('ballY')
-		updateBallY(client: any, ballY: number): void {
-			ballPos.y = ballY;
-			client.broadcast.emit('ballY', ballPos.y);
-			// console.log("Y: ", ballPos.y);
-		}
+		// @SubscribeMessage('ballY')
+		// updateBallY(client: any, ballY: number): void {
+		// 	ballPos.y = ballY;
+		// 	client.broadcast.emit('ballY', ballPos.y);
+		// 	// console.log("Y: ", ballPos.y);
+		// }
 
 		@SubscribeMessage('start')
 		sendStartMessage(client: any): void {
@@ -77,6 +78,7 @@ export class EventsGateway {
 			console.log("start");
 			// console.log("Y: ", ballPos.y);
 		}
+
 		// @SubscribeMessage('paddleBMove')
 		// 	handlePaddleBMove(client: any, newPosition: number): void {
 		// 		client.broadcast.emit('paddleBMove', newPosition);
