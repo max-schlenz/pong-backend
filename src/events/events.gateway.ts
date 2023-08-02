@@ -1,6 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { GameService  } from 'src/game.service';
+import { GameService } from 'src/game.service';
+import { Ball } from 'src/ball.service';
 
 // let paddlePos = 0;
 
@@ -11,12 +12,15 @@ let ballPos = {x: 0, y: 0};
 @WebSocketGateway()
 export class EventsGateway {
 
-	constructor(private gameService: GameService) {
+	constructor(
+		private gameService: GameService,
+		private ball: Ball
+		) {
 		// this.gameService.startGame();
 		setInterval(() => {
 			let newBallPos = this.gameService.ball.moveBall();
 			this.server.emit('ballPosition', newBallPos);
-		}, 15);
+		}, 20);
 	}
 
     server: Server;
@@ -50,6 +54,11 @@ export class EventsGateway {
 	  handleDisconnect(client: any) {
 		this.players.delete(client.id);
 		console.log(`Client disconnected: ${client.id}`);
+	  }
+
+	  resetGame() {
+		this.ball.resetBall();
+		this.server.emit('ballPosition', this.ball.getBallPosition());
 	  }
     
 	  @SubscribeMessage('message')
