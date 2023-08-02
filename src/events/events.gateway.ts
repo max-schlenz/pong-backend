@@ -1,5 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { GameService  } from 'src/game.service';
 
 // let paddlePos = 0;
 
@@ -9,6 +10,14 @@ let ballPos = {x: 0, y: 0};
 
 @WebSocketGateway()
 export class EventsGateway {
+
+	constructor(private gameService: GameService) {
+		// this.gameService.startGame();
+		setInterval(() => {
+			let newBallPos = this.gameService.ball.moveBall();
+			this.server.emit('ballPosition', newBallPos);
+		}, 15);
+	}
 
     server: Server;
 
@@ -34,7 +43,6 @@ export class EventsGateway {
 				client.broadcast.emit('startGame');
 				client.emit('startGame');
 			}
-
 		}
 		console.log(`Client connected: ${client.id}`);
 	  }
@@ -50,10 +58,20 @@ export class EventsGateway {
     	}
 
 		@SubscribeMessage('paddleMove')
-			handlePaddleMove(client: any, newPosition: number): void {
+			handlePaddleMove(client: any, data: { 
+				playerId: string,
+				paddleX: number, 
+				paddleY: number, 
+				paddleWidth: number, 
+				paddleHeight: number 
+			}): void {
+
+				this.gameService.setPaddlePosition(data.playerId, data.paddleX, data.paddleY);
 				// client.broadcast.emit('paddleMove', newPosition);
-				client.broadcast.emit('paddleMove', { playerId: this.players.get(client.id), newPos: newPosition });
-				console.log(this.players.get(client.id));
+				client.broadcast.emit('paddleMove', { playerId: this.players.get(client.id), newPos: data.paddleY });
+				// this.gameService.updateGame(data.paddleX, data.paddleY, data.paddleWidth, data.paddleHeight);
+				// console.log(this.players.get(client.id));
+				// console.log(data.paddleY);
 				return;
 			}
 
