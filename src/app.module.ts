@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsGateway } from './events/events.gateway';
 import { GameService } from './game.service';
-import { Ball } from './ball.service';
 
 @Module({
   imports: [],
@@ -11,13 +10,7 @@ import { Ball } from './ball.service';
   providers: [
 		AppService,
 		EventsGateway,
-		GameService,
-		{ 
-			provide: Ball,
-			useFactory: () => {
-				return new Ball()
-			}
-		}
+		GameService
 	],
 })
 export class AppModule {}
