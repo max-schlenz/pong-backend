@@ -32,7 +32,9 @@ export class EventsGateway {
 		// this.gameService.startGame();
 		setInterval(() => {
 			if (this.gameIsRunning) {
-				let newBallPos = this.gameService.ball.moveBall(this.gameService.paddleA.paddleX, this.gameService.paddleA.paddleY, this.gameService.paddleA.paddleWidth, this.gameService.paddleA.paddleHeight);
+				let newBallPos = this.gameService.ball.moveBall(this.gameService.paddleA.paddleX, this.gameService.paddleA.paddleY,
+																this.gameService.paddleB.paddleX, this.gameService.paddleB.paddleY,
+																this.gameService.paddleA.paddleWidth, this.gameService.paddleA.paddleHeight);
 				this.server.emit('ballPosition', newBallPos);
 			}
 		}, 15);

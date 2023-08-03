@@ -37,33 +37,52 @@ export class Ball {
 		// console.log("RESET");
 	}
 
-	moveBallDir(paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number): void {
-		let paddleMid = paddleY + (paddleHeight / 2);
+	moveBallDir(paddleBY: number, paddleHeight: number, paddle: string): void {
+		let paddleMid = paddleBY + (paddleHeight / 2);
 		let ballMid = this.ballY + (this.ballHgt / 2);
 		let paddleHitLocation = (ballMid - paddleMid) / (paddleHeight / 2);
 		let bounceAngle = (paddleHitLocation * 45) * Math.PI / 180;
 			
-		this.ballDx = -this.ballSpeed * Math.cos(bounceAngle);
+		if (paddle == "A")
+			this.ballDx = -this.ballSpeed * Math.cos(bounceAngle);
+		else
+			this.ballDx = this.ballSpeed * Math.cos(bounceAngle);
 		this.ballDy = this.ballSpeed * Math.sin(bounceAngle);
 		this.ballDx = -this.ballDx;
 		
-		this.ballX = paddleX + paddleWidth; //fix ball sometimes glitching into paddle
 		this.ballSpeed++;
 	}
 
+	handleBallCollision(nextBallX: number, nextBallY: number, paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, paddle: string) {
+		if (paddle == "A"){
+			if ((nextBallX < paddleX + paddleWidth) &&
+			(nextBallY + this.ballHgt >= paddleY) &&
+			(nextBallY < paddleY + paddleHeight))
+				return true;
+			return false;
+		}
+		else {
+			if ((nextBallX + this.ballWid >= paddleX) && 
+			(nextBallY <= paddleY + paddleHeight) &&
+			(nextBallY + this.ballHgt >= paddleY))
+				return true;
+			return false;
+		}
+	}
 	// moveBall(paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number) {
-	moveBall(paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number) {
+	moveBall(paddleAX: number, paddleAY: number, paddleBX: number, paddleBY: number, paddleWidth: number, paddleHeight: number) {
 		let nextBallX = this.ballX + this.ballDx;
 		let nextBallY = this.ballY + this.ballDy;
   
 		// console.log("nextBallX: ", nextBallX);
 
-		if ((nextBallX < 0) ) // || nextBallY + this.ballWid > this.fieldWidth)
+		if ((nextBallX <= 0)) // || nextBallY + this.ballWid > this.fieldWidth)
 		{
 			this.ballDx = 4;
 			this.ballDy = 3;
 			this.ballX = 500,
-			this.ballY = 200
+			this.ballY = 200,
+			this.ballSpeed = 5
 			return {
 				x: 500,
 				y: 200
@@ -79,12 +98,15 @@ export class Ball {
 		else if (nextBallY + this.ballHgt > this.fieldHeight || nextBallY < 0)
 		 this.ballDy = -this.ballDy;
 	
-		else if ((nextBallX + this.ballWid >= paddleX) &&
-		  (nextBallX < paddleX + paddleWidth) &&
-		  (nextBallY + this.ballHgt >= paddleY) &&
-		  (nextBallY < paddleY + paddleHeight))
-			this.moveBallDir(paddleX, paddleY, paddleWidth, paddleHeight);
-		
+		else if (this.handleBallCollision(nextBallX, nextBallY, paddleAX, paddleAY, paddleWidth, paddleHeight, "A")){
+			this.moveBallDir(paddleAY, paddleHeight, "A");
+			this.ballX = paddleAX + paddleWidth;
+		}
+
+		else if (this.handleBallCollision(nextBallX, nextBallY, paddleBX, paddleBY, paddleWidth, paddleHeight, "B")){
+			this.moveBallDir(paddleBY, paddleHeight, "B");
+			this.ballX = paddleBX - this.ballWid;
+		}
 		else {
 		  this.ballX = nextBallX;
 		  this.ballY = nextBallY;

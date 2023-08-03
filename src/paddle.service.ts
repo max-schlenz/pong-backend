@@ -29,7 +29,7 @@ export class Paddle{
 
 	movePaddleDown() {
 		if (this.paddleY >= (this.fieldHeight - this.paddleHeight - 1))
-			this.paddleY= this.fieldHeight - this.paddleHeight;
+			this.paddleY = this.fieldHeight - this.paddleHeight;
 		else
 			this.paddleY += this.paddleSpeed;
 
