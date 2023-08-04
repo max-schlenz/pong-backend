@@ -9,7 +9,7 @@ export class Ball {
 		public ballY: number = 200, 
 		public ballWid: number = 15, 
 		public ballHgt: number = 15, 
-		public ballSpeed: number = 5, 
+		public ballSpeed: number = 2, 
 		public ballDx: number = 4, 
 		public ballDy: number = 3,
 		public fieldWidth: number = 800,
@@ -76,21 +76,31 @@ export class Ball {
   
 		// console.log("nextBallX: ", nextBallX);
 
-		if ((nextBallX <= 0)) // || nextBallY + this.ballWid > this.fieldWidth)
+		if ((nextBallX <= 0) && nextBallX < this.ballX) // || nextBallY + this.ballWid > this.fieldWidth)
 		{
 			this.ballDx = 4;
 			this.ballDy = 3;
 			this.ballX = 500,
 			this.ballY = 200,
-			this.ballSpeed = 5
+			this.ballSpeed = 2
 			return {
 				x: 500,
 				y: 200
 			}
 		}
-			// this.ballDx = -this.ballDx;
-			// this.resetBall();
-
+		
+		else if (nextBallX + this.ballWid > this.fieldWidth && nextBallX > this.ballX) // || nextBallY + this.ballWid > this.fieldWidth)
+		{
+			this.ballDx = 4;
+			this.ballDy = 3;
+			this.ballX = 500,
+			this.ballY = 200,
+			this.ballSpeed = 2
+			return {
+				x: 500,
+				y: 200
+			}
+		}
 
 		else if (nextBallX + this.ballWid > this.fieldWidth)
 		 this.ballDx = -this.ballDx;
