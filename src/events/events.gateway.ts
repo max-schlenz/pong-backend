@@ -1,6 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { GameService } from 'src/game.service';
+import { Room } from 'src/room.service';
 // import { Paddle } from 'src/paddle.service';
 
 // let paddlePos = 0;
@@ -19,12 +20,14 @@ export class EventsGateway {
 	constructor(
 		private gameService: GameService,
 		) {
+			this.rooms.set("test", new Room("test"));
 			this.startGame();
-	}
+		}
 
     server: Server;
 
 	gameIsRunning = false;
+	rooms = new Map<string, Room>();
 	players = new Map<string, string>();
 	
 	startGame() {
@@ -32,9 +35,9 @@ export class EventsGateway {
 		// this.gameService.startGame();
 		setInterval(() => {
 			if (this.gameIsRunning) {
-				let newBallPos = this.gameService.ball.moveBall(this.gameService.paddleA.paddleX, this.gameService.paddleA.paddleY,
-																this.gameService.paddleB.paddleX, this.gameService.paddleB.paddleY,
-																this.gameService.paddleA.paddleWidth, this.gameService.paddleA.paddleHeight);
+				let newBallPos = this.rooms.get("test").ball.moveBall(this.rooms.get("test").paddleA.paddleX, this.rooms.get("test").paddleA.paddleY,
+																this.rooms.get("test").paddleB.paddleX, this.rooms.get("test").paddleB.paddleY,
+																this.rooms.get("test").paddleA.paddleWidth, this.rooms.get("test").paddleA.paddleHeight);
 				this.server.emit('ballPosition', newBallPos);
 			}
 		}, 15);
@@ -72,8 +75,8 @@ export class EventsGateway {
 	  resetGame() {
 		this.gameIsRunning = false;
 		console.log("HERE");
-		this.gameService.ball.resetBall();
-		this.server.emit('ballPosition', this.gameService.ball.getBallPosition());
+		this.rooms.get("test").ball.resetBall();
+		this.server.emit('ballPosition', this.rooms.get("test").ball.getBallPosition());
 	  }
     
 	  @SubscribeMessage('message')
@@ -90,17 +93,17 @@ export class EventsGateway {
 				if (this.players.get(client.id) == "left"){
 					let paddleAPos = {paddleX: 0, paddleY: 0, paddleWidth: 0, paddleHeight: 0};
 					if (data.direction == "up")
-						paddleAPos = this.gameService.paddleA.movePaddleUp();
+						paddleAPos = this.rooms.get("test").paddleA.movePaddleUp();
 					else
-						paddleAPos = this.gameService.paddleA.movePaddleDown();
+						paddleAPos = this.rooms.get("test").paddleA.movePaddleDown();
 					this.server.emit('paddleMove', { playerId: this.players.get(client.id), newPos: paddleAPos.paddleY });
 				}
 				if (this.players.get(client.id) == "right"){
 					let paddleBPos = {paddleX: 0, paddleY: 0, paddleWidth: 0, paddleHeight: 0};
 					if (data.direction == "up")
-						paddleBPos = this.gameService.paddleB.movePaddleUp();
+						paddleBPos = this.rooms.get("test").paddleB.movePaddleUp();
 					else
-						paddleBPos = this.gameService.paddleB.movePaddleDown();
+						paddleBPos = this.rooms.get("test").paddleB.movePaddleDown();
 					this.server.emit('paddleMove', { playerId: this.players.get(client.id), newPos: paddleBPos.paddleY });
 				}
 				// else
