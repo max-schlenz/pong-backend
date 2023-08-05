@@ -3,48 +3,48 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class Paddle{
 	constructor(
-		public paddleX: number = 1,
-		public paddleY: number = 100,
-		public paddleWidth: number = 15,
-		public paddleHeight: number = 100,
-		public paddleSpeed: number = 7,
+		public x: number = 1,
+		public y: number = 100,
+		public wid: number = 15,
+		public hgt: number = 100,
+		public speed: number = 7,
 		public fieldWidth: number = 800,
 		public fieldHeight: number = 600
 		) {}
 		
 		movePaddleUp() {
-			if (this.paddleY > this.paddleSpeed)
-				this.paddleY -= this.paddleSpeed;
+			if (this.y > this.speed)
+				this.y -= this.speed;
 			else
-				this.paddleY = 0;
+				this.y = 0;
 			
 			let data = {
-				paddleX: this.paddleX,
-				paddleY: this.paddleY,
-				paddleWidth: this.paddleWidth,
-				paddleHeight: this.paddleHeight
+				x: this.x,
+				y: this.y,
+				wid: this.wid,
+				hgt: this.hgt
 			};
 			return data;
 		}
 		
 		movePaddleDown() {
-			if (this.paddleY >= (this.fieldHeight - this.paddleHeight - 1))
-				this.paddleY = this.fieldHeight - this.paddleHeight;
+			if (this.y >= (this.fieldHeight - this.hgt - 1))
+				this.y = this.fieldHeight - this.hgt;
 			else
-				this.paddleY += this.paddleSpeed;
+				this.y += this.speed;
 			
 			let data = {
-				paddleX: this.paddleX,
-				paddleY: this.paddleY,
-				paddleWidth: this.paddleWidth,
-				paddleHeight: this.paddleHeight
+				x: this.x,
+				y: this.y,
+				wid: this.wid,
+				hgt: this.hgt
 			};
 			return data;
 		}
 		
 		
 		setPaddlePosition(x: number, y: number) {
-			this.paddleX = x;
-			this.paddleY = y;
+			this.x = x;
+			this.y = y;
 		}
 	}

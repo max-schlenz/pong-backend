@@ -5,95 +5,95 @@ import { Injectable } from "@nestjs/common";
 export class Ball {
 	
 	constructor (
-		public ballX: number = 500, 
-		public ballY: number = 200, 
-		public ballWid: number = 15, 
-		public ballHgt: number = 15, 
-		public ballSpeed: number = 2, 
-		public ballDx: number = 4, 
-		public ballDy: number = 3,
+		public x: number = 500, 
+		public y: number = 200, 
+		public wid: number = 15, 
+		public hgt: number = 15, 
+		public speed: number = 2, 
+		public dx: number = 4, 
+		public dy: number = 3,
 		public fieldWidth: number = 800,
 		public fieldHeight: number = 600,
 		) {	}
 		
 		getBallPosition() {
 			return {
-				x: this.ballX,
-				y: this.ballY
+				x: this.x,
+				y: this.y
 			};
 		}
 		
 		resetBall() {
-			this.ballX = this.fieldWidth / 2 - (this.ballWid / 2);
-			this.ballY = this.fieldHeight / 2 - (this.ballHgt / 2);
-			this.ballDx = 5;
-			this.ballDy = 3;
-			this.ballSpeed = 3;
+			this.x = this.fieldWidth / 2 - (this.wid / 2);
+			this.y = this.fieldHeight / 2 - (this.hgt / 2);
+			this.dx = 5;
+			this.dy = 3;
+			this.speed = 3;
 		}
 		
 		moveBallDir(paddleBY: number, paddleHeight: number, paddle: string): void {
 			let paddleMid = paddleBY + (paddleHeight / 2);
-			let ballMid = this.ballY + (this.ballHgt / 2);
+			let ballMid = this.y + (this.hgt / 2);
 			let paddleHitLocation = (ballMid - paddleMid) / (paddleHeight / 2);
 			let bounceAngle = (paddleHitLocation * 45) * Math.PI / 180;
 			
 			if (paddle == "A")
-				this.ballDx = -this.ballSpeed * Math.cos(bounceAngle);
+				this.dx = -this.speed * Math.cos(bounceAngle);
 			else
-				this.ballDx = this.ballSpeed * Math.cos(bounceAngle);
-				this.ballDy = this.ballSpeed * Math.sin(bounceAngle);
-				this.ballDx = -this.ballDx;
+				this.dx = this.speed * Math.cos(bounceAngle);
+				this.dy = this.speed * Math.sin(bounceAngle);
+				this.dx = -this.dx;
 			
-			this.ballSpeed++;
+			this.speed++;
 		}
 		
 		handleBallCollision(nextBallX: number, nextBallY: number, paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number, paddle: string) {
 			if (paddle == "A"){
 				if ((nextBallX < paddleX + paddleWidth) &&
-				(nextBallY + this.ballHgt >= paddleY) &&
+				(nextBallY + this.hgt >= paddleY) &&
 				(nextBallY < paddleY + paddleHeight))
 					return true;
 				return false;
 			}
 			else {
-				if ((nextBallX + this.ballWid >= paddleX) && 
+				if ((nextBallX + this.wid >= paddleX) && 
 				(nextBallY <= paddleY + paddleHeight) &&
-				(nextBallY + this.ballHgt >= paddleY))
+				(nextBallY + this.hgt >= paddleY))
 					return true;
 				return false;
 			}
 		}
 
 		moveBall(paddleAX: number, paddleAY: number, paddleBX: number, paddleBY: number, paddleWidth: number, paddleHeight: number) {
-			let nextBallX = this.ballX + this.ballDx;
-			let nextBallY = this.ballY + this.ballDy;
+			let nextBallX = this.x + this.dx;
+			let nextBallY = this.y + this.dy;
 			
-			if (((nextBallX <= 0) && nextBallX < this.ballX) || (nextBallX + this.ballWid > this.fieldWidth && nextBallX > this.ballX))
+			if (((nextBallX <= 0) && nextBallX < this.x) || (nextBallX + this.wid > this.fieldWidth && nextBallX > this.x))
 				this.resetBall();
 			
-			else if (nextBallX + this.ballWid > this.fieldWidth)
-				this.ballDx = -this.ballDx;
+			else if (nextBallX + this.wid > this.fieldWidth)
+				this.dx = -this.dx;
 			
-			else if (nextBallY + this.ballHgt > this.fieldHeight || nextBallY < 0)
-				this.ballDy = -this.ballDy;
+			else if (nextBallY + this.hgt > this.fieldHeight || nextBallY < 0)
+				this.dy = -this.dy;
 			
 			else if (this.handleBallCollision(nextBallX, nextBallY, paddleAX, paddleAY, paddleWidth, paddleHeight, "A")){
 				this.moveBallDir(paddleAY, paddleHeight, "A");
-				this.ballX = paddleAX + paddleWidth;
+				this.x = paddleAX + paddleWidth;
 			}
 			
 			else if (this.handleBallCollision(nextBallX, nextBallY, paddleBX, paddleBY, paddleWidth, paddleHeight, "B")){
 				this.moveBallDir(paddleBY, paddleHeight, "B");
-				this.ballX = paddleBX - this.ballWid;
+				this.x = paddleBX - this.wid;
 			}
 			else {
-				this.ballX = nextBallX;
-				this.ballY = nextBallY;
+				this.x = nextBallX;
+				this.y = nextBallY;
 			}
 			
 			return {
-				x: this.ballX,
-				y: this.ballY
+				x: this.x,
+				y: this.y
 			};
 		}
 	}
